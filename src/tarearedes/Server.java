@@ -5,63 +5,25 @@
  */
 package tarearedes;
 
+import java.io.IOException;
+import java.net.ServerSocket;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 /**
  *
- * @author Heller & Maikel
+ * @author Maikel
  */
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
-import java.io.*;
-import java.net.*;
-import java.nio.ByteBuffer;
-
-public class Server {
-
+public class Server  {
     public static void main(String[] args) {
-        int port = 2050;
         try {
-            ServerSocket serverSocket = new ServerSocket(port);
-
-            Socket clientSocket = serverSocket.accept();
-
-            InputStream inputStream = clientSocket.getInputStream();
-
-            BufferedImage[] buffImages = new BufferedImage[16];
-
-            for (int i = 0; i < 16; i++) {
-                byte[] imageAr = new byte[62100];
-                inputStream.read(imageAr);
-                BufferedImage image = ImageIO.read(new ByteArrayInputStream(imageAr));
-//                ImageIO.write(image, "jpg", new File("fnl+" + i + ".jpg"));
-                System.out.println("Received " + image.getHeight() + "x" + image.getWidth());
-                buffImages[i]=image;
-            }
-            
-            int type = buffImages[0].getType();
-            int chunkWidth = buffImages[0].getWidth();
-            int chunkHeight = buffImages[0].getHeight();
-            int rows = 4;
-            int cols = 4;
-            //Initializing the final image
-            BufferedImage finalImg = new BufferedImage(chunkWidth * cols, chunkHeight * rows, type);
-
-            int num = 0;
-            for (int i = 0; i < rows; i++) {
-                for (int j = 0; j < cols; j++) {
-                    finalImg.createGraphics().drawImage(buffImages[num], chunkWidth * j, chunkHeight * i, null);
-                    num++;
-                }
-            }
-            System.out.println("Image concatenated.....");
-            ImageIO.write(finalImg, "jpeg", new File("finalImg.jpg"));
-
-            inputStream.close();
-            clientSocket.close();
-            serverSocket.close();
-        } catch (UnknownHostException e) {
-            System.out.println(e);
-        } catch (IOException e) {
-            System.out.println(e);
+            System.out.println("Server Active... Waiting Client");
+            ServerSocket mainServer = new ServerSocket(utilities.Constants.socketPortNumber);
+            do {
+                new MyServer(mainServer.accept()).start();
+            } while (true);
+        } catch (IOException ex) {
+            Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
         }
-    }
+    } // main
 }

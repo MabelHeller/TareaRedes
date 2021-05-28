@@ -21,11 +21,13 @@ import java.util.logging.Logger;
 public class Client {
 
     public static void main(String[] args) {
-        int port = 2050;
-        try {
-            Socket clientSocket = new Socket("localhost", port);
 
-            OutputStream outputStream = clientSocket.getOutputStream();
+        try {
+            Socket socket = new Socket("localhost", utilities.Constants.socketPortNumber);
+            DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
+            DataInputStream dis = new DataInputStream(socket.getInputStream());
+            dos.writeUTF("action");
+            OutputStream outputStream = socket.getOutputStream();
             BufferedImage image = ImageIO.read(new File("C:\\Users\\Maikel\\Pictures\\kirby.jpg"));
            
 
@@ -56,11 +58,8 @@ public class Client {
                 outputStream.write(byteArrayOutputStream.toByteArray());
                 Thread.sleep(1000);
             }
-
-
-
             outputStream.close();
-            clientSocket.close();
+            socket.close();
         } catch (UnknownHostException e) {
             System.out.println(e);
         } catch (IOException e) {
