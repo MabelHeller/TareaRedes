@@ -32,27 +32,36 @@ public class MyServer extends Thread {
             this.action = receive.readUTF();
             switch (this.action) {
                 case "action":
-                    System.out.println(this.action);
+
                     break;
                 case "save-image":
+                    String directoryPath = "ServerImages/"+receive.readUTF()+"/";
+                    File file = new File(directoryPath);
+                    if (file.isDirectory()) {
+                        System.out.println("File is a Directory");
+                    } else {
+                        boolean dirCreated = file.mkdir();
+                        System.out.println(directoryPath +"created? "+ dirCreated);
+                    }
                     InputStream inputStream = socket.getInputStream();
+                    int rows = Integer.parseInt(receive.readUTF());
+                    int cols = Integer.parseInt(receive.readUTF());
+                    System.out.println(rows + " " + cols);
+                    BufferedImage[] buffImages = new BufferedImage[rows*cols];
 
-                    BufferedImage[] buffImages = new BufferedImage[16];
-
-                    for (int i = 0; i < 16; i++) {
+                    for (int i = 0; i < (rows*cols); i++) {
                         byte[] imageAr = new byte[62100];
                         inputStream.read(imageAr);
                         BufferedImage image = ImageIO.read(new ByteArrayInputStream(imageAr));
-//                ImageIO.write(image, "jpg", new File("fnl+" + i + ".jpg"));
                         System.out.println("Received " + image.getHeight() + "x" + image.getWidth());
                         buffImages[i] = image;
                     }
-
+                    
+                    
                     int type = buffImages[0].getType();
                     int chunkWidth = buffImages[0].getWidth();
                     int chunkHeight = buffImages[0].getHeight();
-                    int rows = 4;
-                    int cols = 4;
+                    
                     //Initializing the final image
                     BufferedImage finalImg = new BufferedImage(chunkWidth * cols, chunkHeight * rows, type);
 
@@ -64,14 +73,15 @@ public class MyServer extends Thread {
                         }
                     }
                     System.out.println("Image concatenated.....");
-                    ImageIO.write(finalImg, "jpeg", new File("finalImg.jpg"));
+                    ImageIO.write(finalImg, "jpeg", new File(directoryPath+"finalImg.jpg"));
 
                     inputStream.close();
-                    socket.close();
+                    
                     break;
                 default:
                     break;
             }
+            socket.close();
 
         } catch (UnknownHostException e) {
             System.out.println(e);
