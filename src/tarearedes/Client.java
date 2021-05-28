@@ -15,6 +15,8 @@ import java.awt.image.BufferedImage;
 import java.io.*;
 import java.net.*;
 import java.nio.ByteBuffer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class Client {
 
@@ -52,8 +54,7 @@ public class Client {
                  ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
                 ImageIO.write(imgs[i], "jpg", byteArrayOutputStream);
                 outputStream.write(byteArrayOutputStream.toByteArray());
-                //ImageIO.write(imgs[i], "jpg", new File("‪fnnnl+"+i+".jpg"));
-            //Thread.sleep(2000);
+                Thread.sleep(1000);
             }
 
 
@@ -64,6 +65,8 @@ public class Client {
             System.out.println(e);
         } catch (IOException e) {
             System.out.println(e);
+        } catch (InterruptedException ex) {
+            Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 }
