@@ -15,34 +15,50 @@ import java.io.*;
 import java.net.*;
 import java.nio.ByteBuffer;
 
-public class Server
-{
-    public static void main(String[] args)
-    {
-        int port=2050;
-        try
-        {
+public class Server {
+
+    public static void main(String[] args) {
+        int port = 2050;
+        try {
             ServerSocket serverSocket = new ServerSocket(port);
 
             Socket clientSocket = serverSocket.accept();
 
             InputStream inputStream = clientSocket.getInputStream();
 
-            System.out.println(inputStream);
+            BufferedImage[] buffImages = new BufferedImage[16];
 
-            byte[] imageAr = new byte[62100];
-            inputStream.read(imageAr);
-
+            for (int i = 0; i < 16; i++) {
+                byte[] imageAr = new byte[62100];
+                inputStream.read(imageAr);
                 BufferedImage image = ImageIO.read(new ByteArrayInputStream(imageAr));
+//                ImageIO.write(image, "jpg", new File("fnl+" + i + ".jpg"));
+                System.out.println("Received " + image.getHeight() + "x" + image.getWidth());
+                buffImages[i]=image;
+            }
+            
+            int type = buffImages[0].getType();
+            int chunkWidth = buffImages[0].getWidth();
+            int chunkHeight = buffImages[0].getHeight();
+            int rows = 4;
+            int cols = 4;
+            //Initializing the final image
+            BufferedImage finalImg = new BufferedImage(chunkWidth * cols, chunkHeight * rows, type);
 
-            System.out.println("Received " + image.getHeight() + "x" + image.getWidth() + ": " + System.currentTimeMillis());
-            ImageIO.write(image, "jpg", new File("C:/Imagenes/imagen1.jpg"));
+            int num = 0;
+            for (int i = 0; i < rows; i++) {
+                for (int j = 0; j < cols; j++) {
+                    finalImg.createGraphics().drawImage(buffImages[num], chunkWidth * j, chunkHeight * i, null);
+                    num++;
+                }
+            }
+            System.out.println("Image concatenated.....");
+            ImageIO.write(finalImg, "jpeg", new File("finalImg.jpg"));
 
             inputStream.close();
             clientSocket.close();
             serverSocket.close();
-        }
-        catch (UnknownHostException e){
+        } catch (UnknownHostException e) {
             System.out.println(e);
         } catch (IOException e) {
             System.out.println(e);

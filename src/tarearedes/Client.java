@@ -9,43 +9,64 @@ package tarearedes;
  *
  * @author Heller & Maikel
  */
+import java.awt.Graphics2D;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.net.*;
 import java.nio.ByteBuffer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
-public class Client
-{
-    public static void main(String[] args)
-    {
-        int port=2050;
-        try
-        {
-            Socket clientSocket = new Socket("localhost",port);
+public class Client {
+
+    public static void main(String[] args) {
+        int port = 2050;
+        try {
+            Socket clientSocket = new Socket("localhost", port);
 
             OutputStream outputStream = clientSocket.getOutputStream();
+            BufferedImage image = ImageIO.read(new File("C:\\Users\\Maikel\\Pictures\\kirby.jpg"));
+           
 
-            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+            int rows = 4; //You should decide the values for rows and cols variables
+            int cols = 4;
+            int chunks = rows * cols;
 
-            BufferedImage image = ImageIO.read(new File("C:/Imagenes/imagen.jpg"));
-            ImageIO.write(image, "jpg", byteArrayOutputStream);
-            
-            byte[] size = ByteBuffer.allocate(4).putInt(byteArrayOutputStream.size()).array();
-            System.out.println(byteArrayOutputStream.size());
-            outputStream.write(byteArrayOutputStream.toByteArray());
-            Thread.sleep(2000);
+            int chunkWidth = image.getWidth() / cols; // determines the chunk width and height
+            int chunkHeight = image.getHeight() / rows;
+            int count = 0;
+            BufferedImage imgs[] = new BufferedImage[chunks]; //Image array to hold image chunks
+            for (int x = 0; x < rows; x++) {
+                for (int y = 0; y < cols; y++) {
+                    //Initialize the image array with image chunks
+                    imgs[count] = new BufferedImage(chunkWidth, chunkHeight, image.getType());
+
+                    // draws the image chunk
+                    Graphics2D gr = imgs[count].createGraphics();
+                    gr.drawImage(image, 0, 0, chunkWidth, chunkHeight, chunkWidth * y, chunkHeight * x, chunkWidth * y + chunkWidth, chunkHeight * x + chunkHeight, null);
+                    gr.dispose();
+                    count++;
+                }
+            }
+            System.out.println("Splitin done");
+            for (int i = 0; i < chunks; i++) {
+                 ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+                ImageIO.write(imgs[i], "jpg", byteArrayOutputStream);
+                outputStream.write(byteArrayOutputStream.toByteArray());
+                Thread.sleep(1000);
+            }
+
+
 
             outputStream.close();
             clientSocket.close();
-        }
-        catch (UnknownHostException e){
+        } catch (UnknownHostException e) {
             System.out.println(e);
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             System.out.println(e);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+        } catch (InterruptedException ex) {
+            Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 }
