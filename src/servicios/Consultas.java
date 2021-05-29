@@ -11,6 +11,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import javax.swing.JOptionPane;
 import modelos.Usuario;
 
 /**
@@ -18,41 +19,40 @@ import modelos.Usuario;
  * @author Heller
  */
 public class Consultas {
+
     private final String tabla = "Usuario";
-    
-    public void guardar(Connection conexion, Usuario usuario) throws SQLException{
-        try{
+
+    public int registrarUsuario(Connection conexion, Usuario usuario) throws SQLException {   
+        int resultado=0;
+        try {
             PreparedStatement consulta;
-            if(usuario.getId()== null){
-                consulta = conexion.prepareStatement("INSERT INTO " + this.tabla + "(nombreUsuario,contrasena) VALUES(?, ?)");
-                consulta.setString(1, usuario.getNombreUsuario());
-                consulta.setString(2, usuario.getContrasena());
-            }else{
-                consulta = conexion.prepareStatement("UPDATE " + this.tabla + " SET nombreUsuario = ?, contrasena = ?, imagen = ?, extension = ? WHERE id= ?");
-                consulta.setString(1, usuario.getNombreUsuario());
-                consulta.setString(2, usuario.getContrasena());
-                consulta.setString(3, usuario.getImagen());
-                consulta.setString(4, usuario.getExtension());
-            }
-            consulta.executeUpdate();
-        }catch(SQLException ex){
+            consulta = conexion.prepareStatement("INSERT INTO Usuario(nombreUsuario,contrasena) VALUES(?,?);");
+            consulta.setString(1, usuario.getNombreUsuario());
+            consulta.setString(2, usuario.getContrasena());
+            resultado=consulta.executeUpdate();            
+            consulta.close();
+        } catch (SQLException ex) {
             throw new SQLException(ex);
         }
+       return resultado;
     }
     
-    public Usuario recuperarPorNombreUsuario(Connection conexion, String nombreUsuario) throws SQLException {
-        Usuario usuario = null;
+      
+    public boolean Login(Connection conexion, Usuario usuario) throws SQLException {
+        PreparedStatement consulta=null;
         try{
-            PreparedStatement consulta = conexion.prepareStatement("SELECT imagen, extension FROM " + this.tabla + " WHERE nombreUsuario = ?" );
-            consulta.setString(1, nombreUsuario);
+            consulta = conexion.prepareStatement("SELECT nombreUsuario, contrasena FROM Usuario WHERE nombreUsuario = ? and contrasena= ?" );
+            consulta.setString(1, usuario.getNombreUsuario());
+            consulta.setString(2, usuario.getContrasena());
             ResultSet resultado = consulta.executeQuery();
-            while(resultado.next()){
-                usuario = new Usuario(nombreUsuario, resultado.getString("imagen"), resultado.getString("extension"));
+            if(resultado.next()){
+                consulta.close();
+                return true;
             }
         }catch(SQLException ex){
             throw new SQLException(ex);
         }
-        return usuario;
+        consulta.close();
+        return false;
     }
-    
 }

@@ -23,6 +23,7 @@ public class Login extends javax.swing.JFrame {
     public Login() {
         this.usuario = new Usuario();
         initComponents();
+        this.setLocationRelativeTo(null);
     }
 
     public Login(Usuario usuario) {
@@ -40,9 +41,9 @@ public class Login extends javax.swing.JFrame {
         jLabel3 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
         jtfnombreUsuario = new javax.swing.JTextField();
-        jtfContrasena = new javax.swing.JTextField();
         jbtRegistrarse = new javax.swing.JButton();
         jButton2 = new javax.swing.JButton();
+        jtfContrasena = new javax.swing.JPasswordField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -58,14 +59,20 @@ public class Login extends javax.swing.JFrame {
         });
 
         jButton2.setText("Iniciar Sesión");
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(80, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addGap(74, 74, 74)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jbtRegistrarse)
                     .addGroup(layout.createSequentialGroup()
                         .addGap(9, 9, 9)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
@@ -74,10 +81,9 @@ public class Login extends javax.swing.JFrame {
                         .addGap(57, 57, 57)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(jButton2)
-                            .addComponent(jtfnombreUsuario)
-                            .addComponent(jtfContrasena, javax.swing.GroupLayout.PREFERRED_SIZE, 104, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addComponent(jbtRegistrarse))
-                .addGap(74, 74, 74))
+                            .addComponent(jtfnombreUsuario, javax.swing.GroupLayout.DEFAULT_SIZE, 104, Short.MAX_VALUE)
+                            .addComponent(jtfContrasena))))
+                .addContainerGap(80, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -103,6 +109,10 @@ public class Login extends javax.swing.JFrame {
     private void jbtRegistrarseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbtRegistrarseActionPerformed
         guardar();        
     }//GEN-LAST:event_jbtRegistrarseActionPerformed
+
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        login();
+    }//GEN-LAST:event_jButton2ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -145,28 +155,57 @@ public class Login extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JButton jbtRegistrarse;
-    private javax.swing.JTextField jtfContrasena;
+    private javax.swing.JPasswordField jtfContrasena;
     private javax.swing.JTextField jtfnombreUsuario;
     // End of variables declaration//GEN-END:variables
 
     
     private void guardar() {
-        String nombreUsuario = jtfnombreUsuario.getText();
+        int resultado=0;
+        String nombreUsuario = jtfnombreUsuario.getText();       
         String contrasena = jtfContrasena.getText();
         this.usuario.setNombreUsuario(nombreUsuario);
         this.usuario.setContrasena(contrasena);
         try {
-            this.consultas.guardar(Conexion.obtener(), this.usuario);
-            Login.this.dispose();
-            Login login = new Login();
-            login.setVisible(true);
-            login.setLocationRelativeTo(null);
+            resultado=this.consultas.registrarUsuario(Conexion.obtener(), this.usuario);
+            if (resultado>0){
+                this.jtfnombreUsuario.setText("");
+                this.jtfContrasena.setText("");
+                JOptionPane.showMessageDialog(this, "Se ha guardado exitosamente");                
+            }
         } catch (SQLException ex) {
             System.out.println(ex.getMessage());
             JOptionPane.showMessageDialog(this, "Ha surgido un error y no se ha podido guardar el registro.");
         } catch (ClassNotFoundException ex) {
             System.out.println(ex);
             JOptionPane.showMessageDialog(this, "Ha surgido un error y no se ha podido guardar el registro.");
+        }
+    }
+    
+    
+    private void login() {
+        boolean resultado;
+        String nombreUsuario = jtfnombreUsuario.getText();       
+        String contrasena = jtfContrasena.getText();
+        this.usuario.setNombreUsuario(nombreUsuario);
+        this.usuario.setContrasena(contrasena);
+        try {
+            if (this.consultas.Login(Conexion.obtener(), this.usuario)){                
+                this.jtfnombreUsuario.setText("");
+                this.jtfContrasena.setText("");
+                this.dispose();
+                Client client = new Client();
+                client.setVisible(true);
+                client.setLocationRelativeTo(null);
+            }else {
+                JOptionPane.showMessageDialog(this, "Las credenciales no son correctas");
+            }
+        } catch (SQLException ex) {
+            System.out.println(ex.getMessage());
+            JOptionPane.showMessageDialog(this, "Ha surgido un error y no se ha podido iniciar sesión el registro.");
+        } catch (ClassNotFoundException ex) {
+            System.out.println(ex);
+            JOptionPane.showMessageDialog(this, "Ha surgido un error y no se ha podido iniciar sesión el registro.");
         }
     }
 }
