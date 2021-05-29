@@ -31,7 +31,7 @@ public class MyServer extends Thread {
             DataInputStream receive = new DataInputStream(this.socket.getInputStream());
             this.action = receive.readUTF();
             switch (this.action) {
-                case "action":
+                case "save-user":
 
                     break;
                 case "save-image":
@@ -44,9 +44,11 @@ public class MyServer extends Thread {
                         System.out.println(directoryPath +"created? "+ dirCreated);
                     }
                     InputStream inputStream = socket.getInputStream();
+                    
                     int rows = Integer.parseInt(receive.readUTF());
                     int cols = Integer.parseInt(receive.readUTF());
-                    System.out.println(rows + " " + cols);
+                    String imgName = receive.readUTF();
+                    
                     BufferedImage[] buffImages = new BufferedImage[rows*cols];
 
                     for (int i = 0; i < (rows*cols); i++) {
@@ -73,7 +75,7 @@ public class MyServer extends Thread {
                         }
                     }
                     System.out.println("Image concatenated.....");
-                    ImageIO.write(finalImg, "jpeg", new File(directoryPath+"finalImg.jpg"));
+                    ImageIO.write(finalImg, "jpeg", new File(directoryPath+imgName));
 
                     inputStream.close();
                     

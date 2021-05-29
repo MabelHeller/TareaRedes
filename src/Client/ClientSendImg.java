@@ -17,10 +17,18 @@ import java.net.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class Client {
+public class ClientSendImg extends Thread implements Runnable{
 
-    public static void main(String[] args) {
-
+    private final String imgName;
+    private final String imgPath;
+    
+    public ClientSendImg(String name, String path){
+        imgName = name;
+        imgPath = path;
+    }
+    
+    @Override
+    public void run(){
         try {
             Socket socket = new Socket("localhost", utilities.Constants.socketPortNumber);
             DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
@@ -30,7 +38,7 @@ public class Client {
             dos.writeUTF("Maikel");
             
             OutputStream outputStream = socket.getOutputStream();
-            BufferedImage image = ImageIO.read(new File("C:\\Users\\Maikel\\Pictures\\kirby.jpg"));
+            BufferedImage image = ImageIO.read(new File(imgPath));
            
 
             int rows =(int)(4 + (Math.random()* 10)); 
@@ -54,11 +62,12 @@ public class Client {
             System.out.println("Splitin done");
             dos.writeUTF(String.valueOf(rows));
             dos.writeUTF(String.valueOf(cols));
+            dos.writeUTF(imgName);
             for (int i = 0; i < chunks; i++) {
                  ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
                 ImageIO.write(imgs[i], "jpg", byteArrayOutputStream);
                 outputStream.write(byteArrayOutputStream.toByteArray());
-                Thread.sleep(100);
+                Thread.sleep(300);
             }
             
             
@@ -69,7 +78,7 @@ public class Client {
         } catch (IOException e) {
             System.out.println(e);
         } catch (InterruptedException ex) {
-            Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ClientSendImg.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 }
