@@ -15,10 +15,8 @@ Para empezar se debe de realizar una clonación del repositorio, utilizando GitH
 
 
 * ### Paso 3
-  Se coloca el nombre del repositorio que se desea clonar o bien se puede buscar entre tus repositorios. Se elige el repositorio y se presiona el boton "Clone" 
-  
-  ![WhatsApp Image 2021-06-01 at 12 45 33 AM](https://user-images.githubusercontent.com/28734060/120284586-a29d9600-c279-11eb-85d0-90667ad4e7bd.jpg)
-
+  Se coloca el link del repositorio que se desea clonar y se presiona el boton "Clone" 
+  ![WhatsApp Image 2021-06-01 at 9 45 56 AM](https://user-images.githubusercontent.com/28734060/120353338-d64edf00-c2be-11eb-8be1-9a84b4288e9d.jpg)
   
   Se podrá observar como esta lista la clonación del repositorio y el proyecto se encuentra en la carpeta GitHub que se encuentra en la carpeta de documentos de su ordenador.
   ![WhatsApp Image 2021-05-31 at 10 37 53 PM](https://user-images.githubusercontent.com/28734060/120279110-4c2d5900-c273-11eb-8d3a-f7fb478ebcbf.jpg)
