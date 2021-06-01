@@ -18,12 +18,21 @@ import java.net.*;
 import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JOptionPane;
+import modelos.Usuario;
+import servicios.Conexion;
+import servicios.Consultas;
 
 public class MyServer extends Thread {
 
     private Socket socket;
     private String action;
-
+       
+    Consultas consultas= new Consultas();
+    
     public MyServer(Socket socket) {
         this.socket = socket;
         this.action = "";
@@ -52,6 +61,17 @@ public class MyServer extends Thread {
                     break;
                 default:
 
+                case "login":                   
+                    String nombreUsuario = dis.readUTF();
+                    String contrasena = dis.readUTF();
+                    Conexion conexion=new Conexion();
+                    Usuario usuario=new Usuario(nombreUsuario, contrasena);
+                    if (consultas.Login(conexion.obtener(), usuario)){
+                        dos.writeBoolean(true);
+                    }else{
+                        dos.writeBoolean(false);
+                    }                    
+                                        
                     break;
             }
             send.close();
@@ -186,6 +206,10 @@ public class MyServer extends Thread {
             System.out.println(e);
         } catch (IOException e) {
             System.out.println(e);
+        } catch (SQLException ex) {
+            Logger.getLogger(MyServer.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(MyServer.class.getName()).log(Level.SEVERE, null, ex);
         }
 
     }

@@ -32,10 +32,9 @@ public class Usuario {
         this.extension = extension;
     }
     
-    public Usuario(String nombreUsuario, String imagen, String extension) {
+    public Usuario(String nombreUsuario, String contrasena) {
         this.nombreUsuario = nombreUsuario;
-        this.imagen = imagen;
-        this.extension = extension;
+        this.contrasena = contrasena;
     }
 
     public Integer getId() {

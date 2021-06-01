@@ -16,7 +16,7 @@ import modelos.Usuario;
 
 /**
  *
- * @author Heller
+ * @author Heller & Maikel
  */
 public class Consultas {
 

@@ -5,7 +5,18 @@
  */
 package vistas;
 
+import java.io.BufferedReader;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.net.Socket;
 import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import modelos.Usuario;
 import servicios.Conexion;
@@ -17,8 +28,8 @@ import servicios.Consultas;
  */
 public class Login extends javax.swing.JFrame {
 
-    private final Consultas consultas = new Consultas();
-    private final Usuario usuario;
+    private Consultas consultas = new Consultas();
+    private Usuario usuario;
 
     public Login() {
         this.usuario = new Usuario();
@@ -111,13 +122,20 @@ public class Login extends javax.swing.JFrame {
     }//GEN-LAST:event_jbtRegistrarseActionPerformed
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        login();
+        try {
+            login();
+        } catch (IOException ex) {
+            Logger.getLogger(Login.class.getName()).log(Level.SEVERE, null, ex);
+        }
+       // login();
     }//GEN-LAST:event_jButton2ActionPerformed
 
     /**
      * @param args the command line arguments
+     * @throws java.io.IOException
      */
-    public static void main(String args[]) {
+    public static void main(String args[]) throws IOException {
+       
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
         /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
@@ -148,6 +166,7 @@ public class Login extends javax.swing.JFrame {
                 new Login().setVisible(true);
             }
         });
+        
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -167,7 +186,7 @@ public class Login extends javax.swing.JFrame {
         this.usuario.setNombreUsuario(nombreUsuario);
         this.usuario.setContrasena(contrasena);
         try {
-            resultado=this.consultas.registrarUsuario(Conexion.obtener(), this.usuario);
+            resultado=this.consultas.registrarUsuario(new Conexion().obtener(), this.usuario);
             if (resultado>0){
                 this.jtfnombreUsuario.setText("");
                 this.jtfContrasena.setText("");
@@ -183,29 +202,43 @@ public class Login extends javax.swing.JFrame {
     }
     
     
-    private void login() {
-        boolean resultado;
-        String nombreUsuario = jtfnombreUsuario.getText();       
-        String contrasena = jtfContrasena.getText();
-        this.usuario.setNombreUsuario(nombreUsuario);
-        this.usuario.setContrasena(contrasena);
-        try {
-            if (this.consultas.Login(Conexion.obtener(), this.usuario)){                
-                this.jtfnombreUsuario.setText("");
-                this.jtfContrasena.setText("");
-                this.dispose();
-                Client client = new Client();
-                client.setVisible(true);
-                client.setLocationRelativeTo(null);
-            }else {
-                JOptionPane.showMessageDialog(this, "Las credenciales no son correctas");
-            }
-        } catch (SQLException ex) {
-            System.out.println(ex.getMessage());
-            JOptionPane.showMessageDialog(this, "Ha surgido un error y no se ha podido iniciar sesión el registro.");
-        } catch (ClassNotFoundException ex) {
-            System.out.println(ex);
-            JOptionPane.showMessageDialog(this, "Ha surgido un error y no se ha podido iniciar sesión el registro.");
+    private void login() throws IOException {
+        if (envioLogin()){
+            this.jtfnombreUsuario.setText("");
+            this.jtfContrasena.setText("");
+            this.dispose();
+            Client client = new Client();
+            client.setVisible(true);
+            client.setLocationRelativeTo(null);
+        }else {
+            JOptionPane.showMessageDialog(this, "Las credenciales no son correctas");
         }
+    }
+    
+    
+    public boolean envioLogin() throws IOException{
+        Socket socket;
+        Boolean bandera;       
+        socket = new Socket("localhost", utilities.Constants.socketPortNumber);
+        DataOutputStream dos = new DataOutputStream(socket.getOutputStream()); 
+        DataInputStream dis = new DataInputStream(socket.getInputStream());
+        dos.writeUTF("login");
+        
+        //prompt for user name
+        String nombreUsuario=jtfnombreUsuario.getText();
+        String contrasena = jtfContrasena.getText();
+
+        //send user name to server
+        dos.writeUTF(nombreUsuario);        
+        dos.writeUTF(contrasena);
+        dos.flush();   
+        
+        bandera=dis.readBoolean();
+        
+        dos.close();
+        dis.close();
+        socket.close();
+               
+        return bandera;
     }
 }
