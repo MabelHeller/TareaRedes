@@ -27,7 +27,7 @@ public class Client {
             DataInputStream dis = new DataInputStream(socket.getInputStream());
             
             dos.writeUTF("save-image");
-            dos.writeUTF("Maikel");
+            dos.writeUTF("Maikel");                      
             
             OutputStream outputStream = socket.getOutputStream();
             BufferedImage image = ImageIO.read(new File("C:\\Users\\Maikel\\Pictures\\kirby.jpg"));
@@ -55,7 +55,7 @@ public class Client {
             dos.writeUTF(String.valueOf(rows));
             dos.writeUTF(String.valueOf(cols));
             for (int i = 0; i < chunks; i++) {
-                 ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+                ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
                 ImageIO.write(imgs[i], "jpg", byteArrayOutputStream);
                 outputStream.write(byteArrayOutputStream.toByteArray());
                 Thread.sleep(100);

@@ -13,12 +13,21 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.net.*;
+import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JOptionPane;
+import modelos.Usuario;
+import servicios.Conexion;
+import servicios.Consultas;
 
 public class MyServer extends Thread {
 
     private Socket socket;
     private String action;
-
+       
+    Consultas consultas= new Consultas();
+    
     public MyServer(Socket socket) {
         this.socket = socket;
         this.action = "";
@@ -27,15 +36,24 @@ public class MyServer extends Thread {
     @Override
     public void run() {
         try {
-            DataOutputStream send = new DataOutputStream(this.socket.getOutputStream());
-            DataInputStream receive = new DataInputStream(this.socket.getInputStream());
-            this.action = receive.readUTF();
+            DataOutputStream dos = new DataOutputStream(this.socket.getOutputStream());
+            DataInputStream dis = new DataInputStream(this.socket.getInputStream());
+            this.action = dis.readUTF();
             switch (this.action) {
-                case "action":
-
+                case "login":                   
+                    String nombreUsuario = dis.readUTF();
+                    String contrasena = dis.readUTF();
+                    Conexion conexion=new Conexion();
+                    Usuario usuario=new Usuario(nombreUsuario, contrasena);
+                    if (consultas.Login(conexion.obtener(), usuario)){
+                        dos.writeBoolean(true);
+                    }else{
+                        dos.writeBoolean(false);
+                    }                    
+                                        
                     break;
                 case "save-image":
-                    String directoryPath = "ServerImages/"+receive.readUTF()+"/";
+                    String directoryPath = "ServerImages/"+dis.readUTF()+"/";
                     File file = new File(directoryPath);
                     if (file.isDirectory()) {
                         System.out.println("File is a Directory");
@@ -44,8 +62,8 @@ public class MyServer extends Thread {
                         System.out.println(directoryPath +"created? "+ dirCreated);
                     }
                     InputStream inputStream = socket.getInputStream();
-                    int rows = Integer.parseInt(receive.readUTF());
-                    int cols = Integer.parseInt(receive.readUTF());
+                    int rows = Integer.parseInt(dis.readUTF());
+                    int cols = Integer.parseInt(dis.readUTF());
                     System.out.println(rows + " " + cols);
                     BufferedImage[] buffImages = new BufferedImage[rows*cols];
 
@@ -87,6 +105,17 @@ public class MyServer extends Thread {
             System.out.println(e);
         } catch (IOException e) {
             System.out.println(e);
+        } catch (SQLException ex) {
+            Logger.getLogger(MyServer.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(MyServer.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
+    
+    public void login(){
+        
+        
+        
+    }
+    
 }
