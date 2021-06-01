@@ -12,17 +12,12 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import Client.ClientSendImg;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
-import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.net.Socket;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.imageio.ImageIO;
 import javax.swing.table.DefaultTableModel;
 
 /**
@@ -53,6 +48,7 @@ public class Client extends javax.swing.JFrame {
             Socket socket = new Socket("localhost", utilities.Constants.socketPortNumber);
             DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
             dos.writeUTF("directory");
+            dos.writeUTF(clientName);
             ObjectInputStream ois = new ObjectInputStream(socket.getInputStream());
             String imgs[] = (String[]) ois.readObject();
             String columnas[] = {"Directorio"};
@@ -202,7 +198,7 @@ public class Client extends javax.swing.JFrame {
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
 
         uploadMessage.setText("En Progreso...");
-        new ClientSendImg(fileName.getName(), fileName.getAbsolutePath(),uploadMessage).start();
+        new ClientSendImg(fileName.getName(), fileName.getAbsolutePath(),clientName,uploadMessage).start();
         
     }//GEN-LAST:event_jButton2ActionPerformed
 
@@ -216,9 +212,10 @@ public class Client extends javax.swing.JFrame {
                 
                 uploadMessage.setText("En Progreso...");
                 new ClientRetrieveImg(
-                        jTable1.getValueAt(jTable1.getSelectedRow(), 0).toString(),
+                        this.jTable1.getValueAt(this.jTable1.getSelectedRow(), 0).toString(),
                         chooser.getSelectedFile().toString(),
-                        uploadMessage
+                        this.clientName,
+                        this.uploadMessage
                 ).start();
                 
         } else {

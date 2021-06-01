@@ -25,11 +25,13 @@ public class ClientRetrieveImg extends Thread implements Runnable {
     private final String imgName;
     private final String imgPath;
     private final JTextField jtf;
+    private final String userName;
     
-    public ClientRetrieveImg(String name, String path,JTextField jt) {
-        imgName = name;
-        imgPath = path;
-        jtf = jt;
+    public ClientRetrieveImg(String name, String path, String user,JTextField jt) {
+        this.imgName = name;
+        this.imgPath = path;
+        this.jtf = jt;
+        this.userName = user;
     }
 
     @Override
@@ -40,7 +42,8 @@ public class ClientRetrieveImg extends Thread implements Runnable {
                 DataInputStream dis = new DataInputStream(socket.getInputStream());
                
                 dos.writeUTF("get-image");
-                dos.writeUTF(imgName);
+                dos.writeUTF(this.imgName);
+                dos.writeUTF(this.userName);
                 int rows = dis.readInt();
                 int cols = dis.readInt();
                 InputStream inputStream = socket.getInputStream();

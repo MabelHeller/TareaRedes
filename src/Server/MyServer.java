@@ -9,19 +9,14 @@ package Server;
  *
  * @author Heller & Maikel
  */
-import Client.ClientSendImg;
 import java.awt.Graphics2D;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.net.*;
-import java.util.Arrays;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.JOptionPane;
 import modelos.Usuario;
 import servicios.Conexion;
 import servicios.Consultas;
@@ -41,28 +36,26 @@ public class MyServer extends Thread {
     @Override
     public void run() {
         try {
-            DataOutputStream send = new DataOutputStream(this.socket.getOutputStream());
-            DataInputStream receive = new DataInputStream(this.socket.getInputStream());
+            DataOutputStream dos = new DataOutputStream(this.socket.getOutputStream());
+            DataInputStream dis = new DataInputStream(this.socket.getInputStream());
 
             System.out.println("Waiting for action...");
-            this.action = receive.readUTF();
+            this.action = dis.readUTF();
             System.out.println("Action recieve:" + action);
             switch (this.action) {
                 case "save-user":
                     break;
                 case "save-image":
-                    saveImage(receive,send);
+                    saveImage(dis,dos);
                     break;
                 case "get-image":
-                    sendImage(receive, send);
+                    sendImage(dis, dos);
                     break;
                 case "directory":
-                    getDirectory(receive);
+                    getDirectory(dis);
                     break;
-                default:
-
-                case "login":                   
-                    String nombreUsuario = dis.readUTF();
+                    case "login":                   
+                String nombreUsuario = dis.readUTF();
                     String contrasena = dis.readUTF();
                     Conexion conexion=new Conexion();
                     Usuario usuario=new Usuario(nombreUsuario, contrasena);
@@ -73,15 +66,20 @@ public class MyServer extends Thread {
                     }                    
                                         
                     break;
+                default:
+
+                
             }
-            send.close();
-            receive.close();
+            dos.close();
+            dis.close();
             this.socket.close();
 
         } catch (UnknownHostException e) {
             System.out.println(e);
         } catch (IOException e) {
             System.out.println(e);
+        } catch (SQLException | ClassNotFoundException ex) {
+            Logger.getLogger(MyServer.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -141,9 +139,15 @@ public class MyServer extends Thread {
         }
     }
 
-    public void getDirectory(DataInputStream recieve) {
+    public void getDirectory(DataInputStream dis) {
         try {
-            String imgs[] = new File("ServerImages/Maikel/").list();
+            String folderName = dis.readUTF();
+            File file = new File("ServerImages/"+folderName+"/");
+            if (!file.isDirectory()) {
+                file.mkdir();
+             
+            }
+            String imgs[] = new File("ServerImages/"+folderName+"/").list();
             try (ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream())) {
                 oos.writeObject(imgs);
             }
@@ -160,7 +164,8 @@ public class MyServer extends Thread {
         String directoryPath;
         try {
             String imgName = recieve.readUTF();
-            directoryPath = "ServerImages/Maikel/" + imgName;
+            String folderName = recieve.readUTF();
+            directoryPath = "ServerImages/"+ folderName +"/" + imgName;
             File file = new File(directoryPath);
             if (file.isFile()) {
                 try (OutputStream outputStream = socket.getOutputStream()) {
@@ -206,10 +211,6 @@ public class MyServer extends Thread {
             System.out.println(e);
         } catch (IOException e) {
             System.out.println(e);
-        } catch (SQLException ex) {
-            Logger.getLogger(MyServer.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (ClassNotFoundException ex) {
-            Logger.getLogger(MyServer.class.getName()).log(Level.SEVERE, null, ex);
         }
 
     }

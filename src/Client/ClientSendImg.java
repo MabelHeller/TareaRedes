@@ -24,11 +24,14 @@ public class ClientSendImg extends Thread implements Runnable {
     private final String imgName;
     private final String imgPath;
     private JTextField jtf;
+    private final String userName;
     
-    public ClientSendImg(String name, String path,JTextField jt) {
-        imgName = name;
-        imgPath = path;
-        jtf = jt;
+    public ClientSendImg(String name, String path, String user,JTextField jt) {
+        this.imgName = name;
+        this.imgPath = path;
+        this.jtf = jt;
+        this.userName = user;
+        
     }
 
     @Override
@@ -39,7 +42,7 @@ public class ClientSendImg extends Thread implements Runnable {
             DataInputStream dis = new DataInputStream(socket.getInputStream());
 
             dos.writeUTF("save-image");
-            dos.writeUTF("Maikel");
+            dos.writeUTF(this.userName);
 
             OutputStream outputStream = socket.getOutputStream();
             BufferedImage image = ImageIO.read(new File(imgPath));
