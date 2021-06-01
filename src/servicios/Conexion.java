@@ -22,9 +22,9 @@ public class Conexion {
         if (cnx == null) {
             try {
                 Class.forName("com.mysql.jdbc.Driver");     
-                cnx = DriverManager.getConnection("jdbc:mysql://localhost/TareaRedes", "root", "");
-                /*String URL = "jdbc:mysql://163.178.107.2:3306/TareaRedes";               
-                cnx = DriverManager.getConnection(URL,"labsturrialba","Saucr.2191");  */              
+                //cnx = DriverManager.getConnection("jdbc:mysql://localhost/TareaRedes", "root", "");
+                String URL = "jdbc:mysql://163.178.107.2:3306/TareaRedes";               
+                cnx = DriverManager.getConnection(URL,"labsturrialba","Saucr.2191");              
             } catch (SQLException ex) {
                 throw new SQLException(ex);
             } catch (ClassNotFoundException ex) {
