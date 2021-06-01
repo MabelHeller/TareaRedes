@@ -18,6 +18,7 @@ import java.io.ObjectInputStream;
 import java.net.Socket;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
 /**
@@ -58,7 +59,7 @@ public class Client extends javax.swing.JFrame {
             }
             DefaultTableModel dtm = new DefaultTableModel(data, columnas);
             jTable1.setModel(dtm);
-            
+
         } catch (IOException | ClassNotFoundException ex) {
             Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -198,18 +199,19 @@ public class Client extends javax.swing.JFrame {
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
 
         uploadMessage.setText("En Progreso...");
-        new ClientSendImg(fileName.getName(), fileName.getAbsolutePath(),clientName,uploadMessage).start();
-        
+        new ClientSendImg(fileName.getName(), fileName.getAbsolutePath(), clientName, uploadMessage).start();
+
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
-        JFileChooser chooser = new JFileChooser();
-        chooser.setCurrentDirectory(new java.io.File("."));
-        chooser.setDialogTitle("Directorio Destino");
-        chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-        chooser.setAcceptAllFileFilterUsed(false);
-        if (chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
-                
+
+        if (this.jTable1.getSelectedRow() >= 0) {
+            JFileChooser chooser = new JFileChooser();
+            chooser.setCurrentDirectory(new java.io.File("."));
+            chooser.setDialogTitle("Directorio Destino");
+            chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+            chooser.setAcceptAllFileFilterUsed(false);
+            if (chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
                 uploadMessage.setText("En Progreso...");
                 new ClientRetrieveImg(
                         this.jTable1.getValueAt(this.jTable1.getSelectedRow(), 0).toString(),
@@ -217,11 +219,10 @@ public class Client extends javax.swing.JFrame {
                         this.clientName,
                         this.uploadMessage
                 ).start();
-                
+            }
         } else {
-            System.out.println("No Selection ");
+            JOptionPane.showMessageDialog(this, "Seleccione una imagen");
         }
-
 
     }//GEN-LAST:event_jButton3ActionPerformed
 
