@@ -82,7 +82,7 @@ Para empezar se debe de realizar una clonación del repositorio, utilizando GitH
     
   # Expresiones de Gratitud
   
-  * ENVIAR UNA IMAGEN ENTRE UN CLIENTE Y UN SERVIDOR CON JAVA
+ * ENVIAR UNA IMAGEN ENTRE UN CLIENTE Y UN SERVIDOR CON JAVA
   
  https://www.jesusninoc.com/01/29/enviar-una-imagen-entre-un-cliente-y-un-servidor-con-java-sockets-tcp/
  
