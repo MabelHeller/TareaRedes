@@ -85,18 +85,23 @@ Para empezar se debe de realizar una clonación del repositorio, utilizando GitH
   # Expresiones de Gratitud
   
   * ENVIAR UNA IMAGEN ENTRE UN CLIENTE Y UN SERVIDOR CON JAVA
+  
  https://www.jesusninoc.com/01/29/enviar-una-imagen-entre-un-cliente-y-un-servidor-con-java-sockets-tcp/
  
  * How to Split an Image into Chunks - Java ImageIO
+ 
  http://kalanir.blogspot.in/2010/02/how-to-split-image-into-chunks-java.html
  
  * How to merge multiple images into one image - Java ImageIO
+ 
  http://kalanir.blogspot.com/2010/02/how-to-merge-multiple-images-into-one.html
  
  * Conectar Java con MySQL en Netbeans
+ 
  https://fernando-gaitan.com.ar/conectar-java-con-mysql-en-netbeans/
  
  * Una plantilla para hacer un buen README
+
  https://gist.github.com/Villanuevand/6386899f70346d4580c723232524d35a
   
   
